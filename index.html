@@ -1,0 +1,292 @@
+<html>
+  <head>
+     <title>Tic Tac Toe</title>
+	 <style>
+		.board {
+		  justify-content: center; 
+		}
+
+		.msg {
+		  display: flex; 
+		  flex-direction: row;
+		  font-size: 0.75em;
+		  text-align: center;
+		}
+
+		.row {
+		  display: flex;
+		  flex-direction: row;
+		  flex-wrap: none;
+		  font-size: 2em;
+		}
+
+		.square {
+		  width: 100px;
+		  height: 100px;
+		  text-align: center;
+		  font-size: 3em;
+		}
+
+		#sqr1 {
+		  border-left: 2px solid;
+		  border-right: 2px solid;
+		}
+
+
+		#sqr3 {
+		  border-top: 2px solid;
+		  border-bottom: 2px solid;
+		}
+
+		#sqr4 {
+		  border: 2px solid;
+		}
+
+		#sqr5 {
+		  border-top: 2px solid;
+		  border-bottom: 2px solid;
+		}
+
+		#sqr7 {
+		   border-left: 2px solid;
+		   border-right: 2px solid;
+		}
+
+		.hidden {
+		  display: none;
+		}
+
+		#btn-reset {
+		  
+		}
+	 </style>
+  </head>
+  <body>
+    <div class="board">
+    <div>
+    <input type="button" value="Reset Game" class='hidden' id='btnreset' />
+    </div>
+      <div id="msg"></div>
+      <div class="row">
+        <div class="square" id="sqr0"></div>
+        <div class="square" id="sqr1"></div>
+        <div class="square" id="sqr2"></div>
+      </div>
+      <div class="row">
+        <div class="square" id="sqr3"></div>
+        <div class="square" id="sqr4"></div>
+        <div class="square" id="sqr5"></div>
+      </div>
+      <div class="row">
+        <div class="square" id="sqr6"></div>
+        <div class="square" id="sqr7"></div>
+        <div class="square" id="sqr8"></div>
+      </div>
+    </div>
+	<script>
+			// 2 Dimensional array
+		/*
+		outside array [
+		 row 0: inside array #1  ['col0', 'col1', 'col2'],
+		 row 1: inside array #2  ['col0', 'col1', 'col2'],
+		 row 2: inside array #3  ['col0', 'col1', 'col2']
+		]
+		*/
+		// global 
+		let board = [
+		  ['', '', ''],
+		  ['', '', ""],
+		  ['', '', '']
+		];
+
+		//let altBoard = ['','','','','','','','',''];
+
+		let xturn = true;
+		let gameWon = false;
+		let boxesFull = false;
+
+		// event listeners
+		let squares = document.querySelectorAll(".square");
+		let squaresArr = Array.prototype.slice.call(squares);
+		let myReset = document.getElementById('btnreset');
+
+		squaresArr.forEach(function(item) {
+		   item.addEventListener("click", attemptMove);
+		});
+
+		// bind reset
+		myReset.addEventListener("click", resetGame);
+
+		// could be a user interaction, click double click, keyboard input, timers
+
+		function resetGame() {
+			// clear board
+		  board = [
+			['', '', ''],
+			['', '', ''],
+			['', '', '']
+		  ];
+		  console.log("Reset");
+		  // clear table squares
+		 /* document.getElementById('sqr0').innerHtml = '';
+		  document.getElementById('sqr1').innerHtml = '';
+		  document.getElementById('sqr2').innerHtml = '';
+		  document.getElementById('sqr3').innerHtml = '';
+		  document.getElementById('sqr4').innerHtml = '';
+		  document.getElementById('sqr5').innerHtml = '';
+		  document.getElementById('sqr6').innerHtml = '';
+		  document.getElementById('sqr7').innerHtml = '';
+		  document.getElementById('sqr8').innerHtml = ''; */
+		  // or --
+		  squaresArr.forEach(function(item) {
+
+			item.innerHTML = '';
+		  });
+		  
+		  // reset turn
+		  xturn = true;
+
+		  // clear won 
+		  gameWon = false;
+		  
+		  // clear boxes full
+		  boxesFull = false;
+		  
+		  // hide button
+		  document.getElementById('btnreset').classList.add('hidden');
+		  
+		  // clear msg
+		  document.getElementById('msg').innerHTML = '';
+		}
+
+		function attemptMove() {
+		 if (gameWon === false) {
+		  document.getElementById('msg').innerHTML = '';
+			let id = this.id;
+		  let num = this.id.substring(3);
+		  //console.log(num);
+			let row = 0;
+			let col = 0;
+			
+			let curPlayer = xturn ? 'X':'O';
+		 // let curPlayer = 'X';
+		 // if (!xturn) curPlayer = 'O';
+			// click to row / col
+			switch (num) {
+				case '0':
+				case '1':
+				case '2':
+					row = 0;
+					col = num;
+					break;
+				case '3':
+				case '4':
+				case '5':
+					row = 1;
+					col = num - 3;
+					break;
+				case '6':
+				case '7':
+				case '8': 
+					row = 2;
+					col = num - 6;
+					break;
+			}
+			
+			// Check for move in filled square
+			if (board[row][col] == '') {
+				
+				board[row][col] = curPlayer;
+				this.innerHTML = curPlayer;
+			
+				// Check for WIN
+			switch (true) {
+				// Horizontal Win
+			  case (board[0][0] == curPlayer && board[0][1] == curPlayer && board[0][2] == curPlayer):
+			  case (board[1][0] == curPlayer && board[1][1] == curPlayer && board[1][2] == curPlayer):
+			  case (board[2][0] == curPlayer && board[2][1] == curPlayer && board[2][2] == curPlayer):
+
+			  // Vertical Win 
+			  case (board[0][0] == curPlayer && board[1][0] == curPlayer && board[2][0] == curPlayer):
+			  case (board[0][1] == curPlayer && board[1][1] == curPlayer && board[2][1] == curPlayer):
+			  case (board[0][2] == curPlayer && board[1][2] == curPlayer && board[2][2] == curPlayer):
+
+			  // Diagonal Win:
+			  case (board[0][0] == curPlayer && board[1][1] == curPlayer && board[2][2] == curPlayer):
+			  case (board[2][0] == curPlayer && board[1][1] == curPlayer && board[0][2] == curPlayer):
+			   document.getElementById('msg').innerHTML = "We have a winner: " + curPlayer;
+			   document.getElementById('btnreset').classList.remove('hidden');
+			   console.log('Win');
+			   gameWon = true;
+			   break;
+			   
+			  default: 
+
+				break;
+			}
+				
+			// Check for all boxes full
+			// Using for loop
+			// i++ increment same as i += 1 or or i = i + 1
+			// i-- decrement same as i -= 1 or or i = i - 1
+			
+			// Staggered arrays 
+			/* [
+					['','',''],
+				['',''], // this isn't as long as the other items in the array 
+				['','','']
+				]*/ // i++ = i = i + 1 i-- i = i - 1 i += 1 i -= 1
+			boxesFull = true;
+			// for let i=0; i < 600000; i++) 
+			for (let i=0; i < board.length; i++) {
+				for (let j=0; j < board[i].length; j++) {
+				console.log('[' + i + '][' + j + ']');
+				// single inline condition if (board[i][j] === '') boxesFull = false;
+				if (board[i][j] === '') {
+					 boxesFull = false;
+				   break;
+				}
+				// if ("false" == true ) -- this is true
+				// if ("false" === true) -- this is not true
+				// run forever! infinite loop
+				// pro semi colon;
+			   /* if (board[i][j] !== 'X' 
+						&& board[i][j] !== 'O') boxesFull = false; */
+				//if (board[i][j].length == 0) boxesFull = false;
+				  // == equals
+				  // != not equals
+				  // strict === and !== (requires type to be the same)
+				  
+				  // operators logical && AND
+				  // || OR 
+				  // be careful & and && are very different
+				  
+			  }
+			  
+			  if (boxesFull === false) {
+				break;
+			  }
+			}
+			
+			if (boxesFull && !gameWon) {
+			// don't type everything
+				document.getElementById('msg').innerHTML = "Game is a draw!";
+			  document.getElementById('btnreset').classList.remove('hidden');
+			  
+			}
+			// if tied or completed add reset button
+			
+				xturn = !xturn;
+				
+			} else {
+				document.getElementById('msg').innerHTML = "That square is already taken! Please try again.";
+			}
+			
+		 } else {
+			document.getElementById('msg').innerHTML = "The game is over!";
+		 }
+		}
+
+	</script>
+  </body>
+</html>
